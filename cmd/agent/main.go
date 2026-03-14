@@ -13,6 +13,7 @@ import (
 func main() {
 	cnf := agent.NewConfig()
 	cnf.ApplyCLIArgs()
+	cnf.ApplyEnvArgs()
 	cnfApp := cnf.GetAppConfig()
 
 	db := agent.NewMemoryStorage()

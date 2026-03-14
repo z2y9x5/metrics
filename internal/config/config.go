@@ -2,6 +2,7 @@ package config
 
 import (
 	"flag"
+	"os"
 )
 
 // Значения по умолчанию.
@@ -13,6 +14,7 @@ const (
 type Config interface {
 	GetAppConfig() app
 	ApplyCLIArgs()
+	ApplyEnvArgs()
 }
 
 // Конфигурация приложения.
@@ -34,6 +36,13 @@ func (c *config) GetAppConfig() app {
 func (c *config) ApplyCLIArgs() {
 	flag.StringVar(&c.App.ServerAddr, "a", defaultServerAddr, "Адрес сервера в формате хост:порт. Пример: "+defaultServerAddr)
 	flag.Parse()
+}
+
+// Применить значения из переменных окружения.
+func (c *config) ApplyEnvArgs() {
+	if val := os.Getenv("ADDRESS"); val != "" {
+		c.App.ServerAddr = val
+	}
 }
 
 // Конструктор конфигурации.
