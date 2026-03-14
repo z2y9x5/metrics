@@ -8,6 +8,8 @@ import (
 	"github.com/z2y9x5/metrics/internal/handler"
 	"github.com/z2y9x5/metrics/internal/repository"
 	"github.com/z2y9x5/metrics/internal/service"
+
+	"github.com/go-chi/chi"
 )
 
 func main() {
@@ -16,8 +18,9 @@ func main() {
 	metrics := service.NewMetrics(db)
 	handlers := handler.NewHandlers(metrics)
 
-	mux := http.NewServeMux()
-	mux.HandleFunc("POST /update/{type}/{name}/{value}", handlers.UpdateHandler)
+	mux := chi.NewRouter()
+	mux.Use(handler.FixDoubleSlashes)
+	mux.Post("/update/{type}/{name}/{value}", handlers.UpdateHandler)
 
 	log.Fatal(http.ListenAndServe(cnfApp.ServerAddr, mux))
 }

@@ -5,6 +5,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/go-chi/chi"
 	models "github.com/z2y9x5/metrics/internal/model"
 	"github.com/z2y9x5/metrics/internal/service"
 )
@@ -30,9 +31,9 @@ func (h handlers) UpdateHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	metric := models.Metrics{}
-	pathType := r.PathValue("type")
-	pathName := r.PathValue("name")
-	pathValue := r.PathValue("value")
+	pathType := chi.URLParam(r, "type")
+	pathName := chi.URLParam(r, "name")
+	pathValue := chi.URLParam(r, "value")
 
 	switch pathType {
 	case models.Counter:
