@@ -4,20 +4,72 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+	"text/template"
 
-	"github.com/go-chi/chi"
 	models "github.com/z2y9x5/metrics/internal/model"
 	"github.com/z2y9x5/metrics/internal/service"
+
+	"github.com/go-chi/chi"
 )
+
+const rootPageTemplate = `
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+	<meta charset="UTF-8">
+	<title>Метрики</title>
+</head>
+<body>
+	<pre>
+		{{range .}}
+Name: {{.Name}}, Type: {{.Type}}, Value: {{.Value}}
+		{{end}}
+	</pre>
+</body>
+</html>
+`
 
 // Интерфейс эндпоинтов.
 type Handlers interface {
+	RootHandler(w http.ResponseWriter, r *http.Request)
 	UpdateHandler(w http.ResponseWriter, r *http.Request)
+	ValueHandler(w http.ResponseWriter, r *http.Request)
 }
 
 // Эндпоинты.
 type handlers struct {
 	metrics service.Metrics
+}
+
+// Возвращает HTML-страницу со списком имён и значений всех известных на текущий момент метрик.
+func (h handlers) RootHandler(w http.ResponseWriter, r *http.Request) {
+	tmpl := template.Must(template.New("index").Parse(rootPageTemplate))
+	metrics := h.metrics.GetAll()
+	data := []struct {
+		Name  string
+		Type  string
+		Value string
+	}{}
+	for _, v := range metrics {
+		mValue := ""
+		if v.MType == models.Gauge {
+			mValue = strconv.FormatFloat(*v.Value, 'f', -1, 64)
+		} else {
+			mValue = strconv.FormatInt(*v.Delta, 10)
+		}
+		data = append(data, struct {
+			Name  string
+			Type  string
+			Value string
+		}{
+			Name:  v.ID,
+			Type:  v.MType,
+			Value: mValue,
+		})
+	}
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	w.WriteHeader(http.StatusOK)
+	tmpl.Execute(w, data)
 }
 
 // Принимает данные в формате /update/<ТИП_МЕТРИКИ>/<ИМЯ_МЕТРИКИ>/<ЗНАЧЕНИЕ_МЕТРИКИ>, Content-Type: text/plain.
@@ -66,6 +118,34 @@ func (h handlers) UpdateHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "text/plain; charset=utf-8")
 	w.WriteHeader(http.StatusOK)
+}
+
+// Принимает запрос в формате /value/<ТИП_МЕТРИКИ>/<ИМЯ_МЕТРИКИ>.
+// Возвращает аккумулированное значение метрики в текстовом виде со статусом http.StatusOK.
+// При попытке запроса неизвестной метрики возвращает http.StatusNotFound.
+func (h handlers) ValueHandler(w http.ResponseWriter, r *http.Request) {
+	pathType := chi.URLParam(r, "type")
+	pathName := chi.URLParam(r, "name")
+
+	val, ok := h.metrics.Get(pathName)
+	if !ok {
+		http.Error(w, "Metric not found", http.StatusNotFound)
+		return
+	}
+	if pathType != val.MType {
+		http.Error(w, "Metric not found", http.StatusNotFound)
+		return
+	}
+
+	w.Header().Set("Content-Type", "text/plain; charset=utf-8")
+	w.WriteHeader(http.StatusOK)
+	res := ""
+	if val.MType == models.Gauge {
+		res = strconv.FormatFloat(*val.Value, 'f', -1, 64)
+	} else {
+		res = strconv.FormatInt(*val.Delta, 10)
+	}
+	w.Write([]byte(res))
 }
 
 // Конструктор эндпоинтов.
