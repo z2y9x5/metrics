@@ -16,8 +16,12 @@ import (
 // Заглушка хранилища данных.
 type mockRepository struct{}
 
-func (m mockRepository) Get(name string) (value models.Metrics, ok bool)
-func (m mockRepository) GetAll() []models.Metrics
+func (m mockRepository) Get(name string) (value models.Metrics, ok bool) {
+	return models.Metrics{}, true
+}
+func (m mockRepository) GetAll() []models.Metrics {
+	return []models.Metrics{}
+}
 func (m mockRepository) Append(metric models.Metrics)  {}
 func (m mockRepository) Replace(metric models.Metrics) {}
 
