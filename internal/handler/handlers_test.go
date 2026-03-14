@@ -27,10 +27,9 @@ func (m mockRepository) Replace(metric models.Metrics) {}
 
 func TestUpdateHandler(t *testing.T) {
 	type have struct {
-		pathType    string
-		pathName    string
-		pathValue   string
-		contentType string
+		pathType  string
+		pathName  string
+		pathValue string
 	}
 	type want struct {
 		statusCode int
@@ -43,10 +42,9 @@ func TestUpdateHandler(t *testing.T) {
 		{
 			name: "UpdateHandler test 1",
 			have: have{
-				pathType:    "gauge",
-				pathName:    "test",
-				pathValue:   "1",
-				contentType: "text/plain",
+				pathType:  "gauge",
+				pathName:  "test",
+				pathValue: "1",
 			},
 			want: want{
 				statusCode: 200,
@@ -55,10 +53,9 @@ func TestUpdateHandler(t *testing.T) {
 		{
 			name: "UpdateHandler test 2",
 			have: have{
-				pathType:    "counter",
-				pathName:    "test",
-				pathValue:   "1",
-				contentType: "text/plain",
+				pathType:  "counter",
+				pathName:  "test",
+				pathValue: "1",
 			},
 			want: want{
 				statusCode: 200,
@@ -67,10 +64,9 @@ func TestUpdateHandler(t *testing.T) {
 		{
 			name: "UpdateHandler test 3",
 			have: have{
-				pathType:    "wtf",
-				pathName:    "test",
-				pathValue:   "1",
-				contentType: "text/plain",
+				pathType:  "wtf",
+				pathName:  "test",
+				pathValue: "1",
 			},
 			want: want{
 				statusCode: 400,
@@ -79,10 +75,9 @@ func TestUpdateHandler(t *testing.T) {
 		{
 			name: "UpdateHandler test 4",
 			have: have{
-				pathType:    "",
-				pathName:    "test",
-				pathValue:   "1",
-				contentType: "text/plain",
+				pathType:  "",
+				pathName:  "test",
+				pathValue: "1",
 			},
 			want: want{
 				statusCode: 404,
@@ -91,34 +86,31 @@ func TestUpdateHandler(t *testing.T) {
 		{
 			name: "UpdateHandler test 5",
 			have: have{
-				pathType:    "gauge",
-				pathName:    "test",
-				pathValue:   "1",
-				contentType: "text/plain; charset=utf-8",
-			},
-			want: want{
-				statusCode: 200,
-			},
-		},
-		{
-			name: "UpdateHandler test 6",
-			have: have{
-				pathType:    "gauge",
-				pathName:    "test",
-				pathValue:   "1",
-				contentType: "text/html",
+				pathType:  "gauge",
+				pathName:  "test",
+				pathValue: "z",
 			},
 			want: want{
 				statusCode: 400,
 			},
 		},
 		{
+			name: "UpdateHandler test 6",
+			have: have{
+				pathType:  "gauge",
+				pathName:  "test",
+				pathValue: "",
+			},
+			want: want{
+				statusCode: 404,
+			},
+		},
+		{
 			name: "UpdateHandler test 7",
 			have: have{
-				pathType:    "gauge",
-				pathName:    "test",
-				pathValue:   "z",
-				contentType: "text/plain",
+				pathType:  "counter",
+				pathName:  "test",
+				pathValue: "z",
 			},
 			want: want{
 				statusCode: 400,
@@ -127,10 +119,9 @@ func TestUpdateHandler(t *testing.T) {
 		{
 			name: "UpdateHandler test 8",
 			have: have{
-				pathType:    "gauge",
-				pathName:    "test",
-				pathValue:   "",
-				contentType: "text/plain",
+				pathType:  "counter",
+				pathName:  "test",
+				pathValue: "",
 			},
 			want: want{
 				statusCode: 404,
@@ -139,34 +130,9 @@ func TestUpdateHandler(t *testing.T) {
 		{
 			name: "UpdateHandler test 9",
 			have: have{
-				pathType:    "counter",
-				pathName:    "test",
-				pathValue:   "z",
-				contentType: "text/plain",
-			},
-			want: want{
-				statusCode: 400,
-			},
-		},
-		{
-			name: "UpdateHandler test 10",
-			have: have{
-				pathType:    "counter",
-				pathName:    "test",
-				pathValue:   "",
-				contentType: "text/plain",
-			},
-			want: want{
-				statusCode: 404,
-			},
-		},
-		{
-			name: "UpdateHandler test 11",
-			have: have{
-				pathType:    "gauge",
-				pathName:    "",
-				pathValue:   "1",
-				contentType: "text/plain",
+				pathType:  "gauge",
+				pathName:  "",
+				pathValue: "1",
 			},
 			want: want{
 				statusCode: 404,
@@ -188,7 +154,6 @@ func TestUpdateHandler(t *testing.T) {
 			url := "/update/" + test.have.pathType + "/" + test.have.pathName + "/" + test.have.pathValue
 			r := httptest.NewRequest(http.MethodPost, url, nil)
 			r.Host = cnf.ServerAddr
-			r.Header.Set("Content-Type", test.have.contentType)
 			w := httptest.NewRecorder()
 			mux.ServeHTTP(w, r)
 			res := w.Result()

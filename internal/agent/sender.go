@@ -2,7 +2,6 @@ package agent
 
 import (
 	"context"
-	"log"
 	"net/http"
 	"strconv"
 	"sync"
@@ -54,15 +53,12 @@ func (s *sender) send() {
 		url := "http://" + s.serverAddr + "/update/" + pathType + "/" + pathName + "/" + pathValue
 		resp, err := http.Post(url, "text/plain", nil)
 		if err != nil {
-			log.Println("request error", err)
 			continue
 		}
 		defer resp.Body.Close()
 		if resp.StatusCode != http.StatusOK {
-			log.Println("response code error", resp.StatusCode, "на запрос", url)
 			continue
 		}
-		log.Println("successful sending", pathName, pathValue)
 	}
 }
 
