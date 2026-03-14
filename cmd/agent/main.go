@@ -12,9 +12,12 @@ import (
 
 func main() {
 	cnf := agent.NewConfig()
+	cnf.ApplyCLIArgs()
+	cnfApp := cnf.GetAppConfig()
+
 	db := agent.NewMemoryStorage()
-	collector := agent.NewCollector(cnf, db)
-	sender := agent.NewSender(cnf, db)
+	collector := agent.NewCollector(cnfApp, db)
+	sender := agent.NewSender(cnfApp, db)
 
 	var wg sync.WaitGroup
 	ctx, cancel := context.WithCancel(context.Background())

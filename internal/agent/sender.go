@@ -63,7 +63,7 @@ func (s *sender) send() {
 }
 
 // Конструктор отправителя данных.
-func NewSender(cnf config, db Storage) Sender {
+func NewSender(cnf configApp, db Storage) Sender {
 	return &sender{
 		metrics:        db,
 		serverAddr:     cnf.ServerAddr,

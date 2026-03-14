@@ -93,7 +93,7 @@ func (c *collector) collect() {
 }
 
 // Конструктор сборщика метрик.
-func NewCollector(cnf config, db Storage) Collector {
+func NewCollector(cnf configApp, db Storage) Collector {
 	return &collector{
 		metrics:      db,
 		pollInterval: cnf.PollInterval,

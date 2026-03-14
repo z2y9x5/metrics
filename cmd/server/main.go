@@ -13,7 +13,10 @@ import (
 )
 
 func main() {
-	cnfApp := config.NewConfig().GetAppConfig()
+	cnf := config.NewConfig()
+	cnf.ApplyCLIArgs()
+	cnfApp := cnf.GetAppConfig()
+
 	db := repository.NewMemoryRepository()
 	metrics := service.NewMetrics(db)
 	handlers := handler.NewHandlers(metrics)
