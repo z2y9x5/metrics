@@ -3,7 +3,6 @@ package handler
 import (
 	"net/http"
 	"strconv"
-	"strings"
 	"text/template"
 
 	models "github.com/z2y9x5/metrics/internal/model"
@@ -77,10 +76,10 @@ func (h handlers) RootHandler(w http.ResponseWriter, r *http.Request) {
 // При попытке передать запрос без имени метрики возвращает http.StatusNotFound.
 // При попытке передать запрос с некорректным типом метрики или значением возвращает http.StatusBadRequest.
 func (h handlers) UpdateHandler(w http.ResponseWriter, r *http.Request) {
-	if !(strings.HasPrefix(r.Header.Get("Content-Type"), "text/plain")) {
-		http.Error(w, "Content-Type must be text/plain", http.StatusBadRequest)
-		return
-	}
+	// if !(strings.HasPrefix(r.Header.Get("Content-Type"), "text/plain")) {
+	// 	http.Error(w, "Content-Type must be text/plain", http.StatusBadRequest)
+	// 	return
+	// }
 
 	metric := models.Metrics{}
 	pathType := chi.URLParam(r, "type")
