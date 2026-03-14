@@ -1,6 +1,6 @@
 module github.com/z2y9x5/metrics
 
-go 1.24.13
+go 1.26.0
 
 require (
 	github.com/go-chi/chi v1.5.5

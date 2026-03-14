@@ -186,6 +186,7 @@ func TestUpdateHandler(t *testing.T) {
 			w := httptest.NewRecorder()
 			mux.ServeHTTP(w, r)
 			res := w.Result()
+			defer res.Body.Close()
 
 			assert.Equal(t, test.want.statusCode, res.StatusCode)
 		})

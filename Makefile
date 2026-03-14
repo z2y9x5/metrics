@@ -1,4 +1,4 @@
-COMPILER=go1.24.13
+COMPILER=go
 SERVER_PATH=./cmd/server
 SERVER_BIN=server
 AGENT_PATH=./cmd/agent

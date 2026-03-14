@@ -57,6 +57,7 @@ func (s *sender) send() {
 			log.Println("request error", err)
 			continue
 		}
+		defer resp.Body.Close()
 		if resp.StatusCode != http.StatusOK {
 			log.Println("response code error", resp.StatusCode, "на запрос", url)
 			continue
