@@ -2,6 +2,8 @@ package agent
 
 import (
 	"flag"
+	"os"
+	"strconv"
 	"time"
 )
 
@@ -16,6 +18,7 @@ const (
 type Config interface {
 	GetAppConfig() configApp
 	ApplyCLIArgs()
+	ApplyEnvArgs()
 }
 
 // Конфигурация приложения.
@@ -44,6 +47,23 @@ func (c *config) ApplyCLIArgs() {
 	c.App.ServerAddr = *a
 	c.App.PollInterval = time.Duration(*p) * time.Second
 	c.App.ReportInterval = time.Duration(*r) * time.Second
+}
+
+// Применить значения из переменных окружения.
+func (c *config) ApplyEnvArgs() {
+	if val := os.Getenv("ADDRESS"); val != "" {
+		c.App.ServerAddr = val
+	}
+	if val := os.Getenv("POLL_INTERVAL"); val != "" {
+		if i, err := strconv.Atoi(val); err == nil {
+			c.App.PollInterval = time.Duration(i) * time.Second
+		}
+	}
+	if val := os.Getenv("REPORT_INTERVAL"); val != "" {
+		if i, err := strconv.Atoi(val); err == nil {
+			c.App.PollInterval = time.Duration(i) * time.Second
+		}
+	}
 }
 
 // Конструктор конфигурации.
